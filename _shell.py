@@ -1,4 +1,3 @@
-#!/Users/ginoprasad/miniconda3/envs/webscrape/bin/python3
 import time
 import zmq
 
@@ -8,8 +7,7 @@ context = zmq.Context()
 socket = context.socket(zmq.REQ)
 socket.connect("tcp://localhost:5555")
 
-
-controller_file = "/Users/ginoprasad/Job_Applications/web_crawler/controller.txt"
+controller_file = "controller.txt"
 with open(controller_file) as infile:
 	controller_lines = infile.read().split('\n')
 	controller = [(x.split(',')[0], int(x.split(',')[1])) for x in controller_lines if x.strip()]

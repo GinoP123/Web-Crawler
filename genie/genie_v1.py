@@ -6,7 +6,7 @@ import torch
 import gensim.downloader
 import yaml
 
-profile_path = "/Users/ginoprasad/Job_Applications/web_crawler/Profiles/default.yaml"
+profile_path = "Profiles/default.yml"
 with open(profile_path) as infile:
     profile = yaml.safe_load(infile)
 
@@ -14,11 +14,11 @@ GLOBALS = {
     'glove_vectors': None,
 }
 
-models_folder = "/Users/ginoprasad/Job_Applications/web_crawler/genie/models"
+models_folder = "genie/models"
 with open(f"{models_folder}/model.onnx", "rb") as f:
     onx = f.read()
 
-labels_path = "/Users/ginoprasad/Job_Applications/web_crawler/genie/models/labels.txt"
+labels_path = "genie/models/labels.txt"
 with open(labels_path) as infile:
     labels  = []
     for line in infile.read().strip().split('\n'):

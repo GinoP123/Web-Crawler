@@ -1,22 +1,22 @@
 import numpy as np
 import glob
 
-included_file_paths = ['/Users/ginoprasad/Job_Applications/web_crawler/aladdin/dataset/included_f1_revision.txt']
-included_file_paths += glob.glob("/Users/ginoprasad/Job_Applications/web_crawler/dataset/*/keystrokes/page_*")
-included = ''
-for dataset_path in included_file_paths:
-    with open(dataset_path) as infile:
-        if 'keystrokes' in dataset_path:
-            included += ''.join(infile.readlines()[2::20])
-        else:
-            included += infile.read()
+# included_file_paths = ['/Users/ginoprasad/Job_Applications/web_crawler/aladdin/dataset/included_f1_revision.txt']
+# included_file_paths += glob.glob("/Users/ginoprasad/Job_Applications/web_crawler/dataset/*/keystrokes/page_*")
+# included = ''
+# for dataset_path in included_file_paths:
+#     with open(dataset_path) as infile:
+#         if 'keystrokes' in dataset_path:
+#             included += ''.join(infile.readlines()[2::20])
+#         else:
+#             included += infile.read()
 
-excluded_file_path = '/Users/ginoprasad/Job_Applications/web_crawler/aladdin/dataset/excluded_f1_revision.txt'
-with open(excluded_file_path) as infile:
-    excluded = infile.read()
-with open("/Users/ginoprasad/Job_Applications/web_crawler/aladdin/dataset/error_list.txt") as infile:
-    lines = infile.readlines()
-    excluded += ''.join([y for x, y in zip(lines[2::5], lines[3::5]) if x == "<class 'selenium.common.exceptions.ElementNotInteractableException'>\n"])
+# excluded_file_path = '/Users/ginoprasad/Job_Applications/web_crawler/aladdin/dataset/excluded_f1_revision.txt'
+# with open(excluded_file_path) as infile:
+#     excluded = infile.read()
+# with open("/Users/ginoprasad/Job_Applications/web_crawler/aladdin/dataset/error_list.txt") as infile:
+#     lines = infile.readlines()
+#     excluded += ''.join([y for x, y in zip(lines[2::5], lines[3::5]) if x == "<class 'selenium.common.exceptions.ElementNotInteractableException'>\n"])
 
 
 def get_alignment_local_score(s_list, t, indel_penalty=-1, sub_penalty=-1):

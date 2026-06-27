@@ -6,7 +6,7 @@ resize -s 60 44
 
 if [[ $(ps -a | grep .ipynb | grep -v grep) == '' ]]; then
 	winID="$(osascript -e 'id of window 1 of app "Terminal"')"
-	ttab jupyter notebook $(realpath ./web_logger.ipynb)
+	ttab jupyter notebook $(realpath ./crawler.ipynb)
 	osascript <<EOS
 tell app "Terminal"
     set frontmost of windows whose id = $winID to true
@@ -15,6 +15,4 @@ end tell
 EOS
 fi
 
-
-conda activate webscrape
 python3 ./_shell.py

@@ -40,13 +40,14 @@ def get_glove_vectors():
     return glove_vectors, common_words
 
 class Logger():
-    def __init__(self):
+    def __init__(self, silent=True):
         self.start_time = datetime.now().strftime('%h_%d_%H-%M')
-        self.outdir = f"/Users/ginoprasad/Job_Applications/web_crawler/dataset/{self.start_time}"
+        self.outdir = f"dataset/{self.start_time}"
         os.makedirs(self.outdir, exist_ok=True)
         self.outfile = f"{self.outdir}/log.txt"
         sp.run(f"touch {self.outfile}", shell=True)
-        sp.run(f"/usr/bin/open -a 'Google Chrome' {self.outfile}", shell=True)
+        if not silent:
+            sp.run(f"/usr/bin/open -a 'Google Chrome' {self.outfile}", shell=True)
         # self.outfile = open(self.outfile, 'a')
 
     def log(self, x):
@@ -74,11 +75,11 @@ def restart_driver():
     GLOBALS["logger"].log(f"Restarting Driver")
     GLOBALS["driver"] = webdriver.Chrome()
 
-    # GLOBALS["driver"].set_window_size(880, 900)
-    # GLOBALS["driver"].set_window_position(100,0)
+    GLOBALS["driver"].set_window_size(880, 900)
+    GLOBALS["driver"].set_window_position(100,0)
 
-    GLOBALS["driver"].set_window_size(1280, 1200)
-    GLOBALS["driver"].set_window_position(120,0)
+    # GLOBALS["driver"].set_window_size(1280, 1200)
+    # GLOBALS["driver"].set_window_position(120,0)
     return 'Driver Restarted'
 
 def get_parent(element):
@@ -101,7 +102,7 @@ def close():
 
 def get_element_info(element, soup=False):
     soup = type(element) == bs4.element.Tag
-    text = element.text
+    text = element['label'] if element.has_attr('label') else element.text
     while not text:
         text = element.text
         if not text:
@@ -138,7 +139,7 @@ def increment_info(info):
 def find_buttons():
     soup = get_soup()
     buttons = {x.text: x for x in soup.find_all(lambda tag: tag.has_attr('class') and "button" in tag['class'])}
-    include_elements = soup.find_all(lambda tag: tag.name in ["button", "li", "a"])
+    include_elements = soup.find_all(lambda tag: tag.name in ["sdf-button", "button", "li", "a", 'sdf-checkbox', 'checkbox'])
     for x in include_elements:
         info = get_element_info(x).strip()
         while info and info in buttons:
@@ -153,7 +154,7 @@ def find_inputs():
     elements = {}
     seen = set()
 
-    for element in list(soup.find_all(lambda tag: tag.name in ["input", "textarea"])) + list(soup.select(".input")):
+    for element in list(soup.find_all(lambda tag: tag.name in ["sdf-input", "input", "textarea"])) + list(soup.select(".input")):
         if element not in seen:
             info = get_element_info(element).strip()
             while info and info in elements:
@@ -191,8 +192,8 @@ def fill_input_element(element, value):
     if click_button_element(element):
         GLOBALS["logger"].log(f"Clicking Success")
         if value.lower() != 'click':
-            element.clear()
-            sleep(0.25)
+            # element.clear()
+            # sleep(0.25)
             element.send_keys(value)
             GLOBALS["logger"].log(f"Filling with '{value}', Success")
             sleep(1)
@@ -249,6 +250,18 @@ def click_button(key):
     GLOBALS["logger"].log(f"Clicking '{key}', Failure")
     return 'Failure'
 
+
+def click_button_patiently(key, timeout=120):
+    wait_time = 0
+    while wait_time < timeout:
+        if key in find_buttons():
+            return click_button(key)
+        else:
+            wait_time += 0.5
+            time.sleep(0.5)
+    GLOBALS["logger"].log(f"ERROR: Key {key} not found after waiting {timeout} sec")
+    return 'Failure'
+
 def fill_input(key, value):
     inputs = find_inputs()    
     if key in inputs:
@@ -258,6 +271,19 @@ def fill_input(key, value):
     else:
         GLOBALS["logger"].log(f"ERROR: Key {key} not found")
     return 'Failure'
+
+
+def fill_input_patiently(key, value, timeout=120):
+    wait_time = 0
+    while wait_time < timeout:
+        if key in find_inputs():
+            return fill_input(key, value)
+        else:
+            wait_time += 0.5
+            time.sleep(0.5)
+    GLOBALS["logger"].log(f"ERROR: Key {key} not found after waiting {timeout} sec")
+    return 'Failure'
+
 
 def break_():
     GLOBALS["logger"].log("BREAKING")
@@ -304,7 +330,7 @@ def dun_b_search(name):
         click_button('Company Profile')
         dun_b_wait()
 
-    outdir = '/Users/ginoprasad/Job_Applications/web_consolidator/dun_b_data'
+    outdir = 'dun_b_data'
     os.makedirs(outdir, exist_ok=True)
     with open(f"{outdir}/{name}_{GLOBALS['logger'].start_time}.html", 'w') as outfile:
         outfile.write(GLOBALS["driver"].page_source)
@@ -753,11 +779,12 @@ def hash(x):
     return hashlib.sha256(x.encode()).hexdigest()[:16]
 
 def iframe_check():
+    return
     soup = get_soup()
-    iframes = soup.find_all(lambda x: (x.has_attr('src') and \
-        any((x['src'].startswith(y) for y in ['https://boards.greenhouse.io/embed/job_app', 'https://intuit.icims.com/forms']))) or \
-            x.has_attr('id') and x['id'] in ['icims_content_iframe'])
+    iframes = soup.find_all(lambda x: x.name == 'iframe' and hasattr(x, 'src'))
+    print(iframes)
     if iframes:
+        print("SWITCHING TO IFRAME")
         GLOBALS['driver'].switch_to.frame(soup_to_selenium(iframes[0]))
     return ''
     # driver.switch_to.default_content()

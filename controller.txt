@@ -1,0 +1,23 @@
+Restart Driver,0
+Go To Link,1
+Click Button,1
+Fill Input,2
+Print Buttons,0
+Print Inputs,0
+Close,0
+Break,0
+Next,0
+Broadcom Test,0
+Reset Form Log,0
+Get Predicted Values,0
+Fill Predicted Values,0
+Update,0
+Save Page HTML,0
+Reset Log,0
+Databricks Test,0
+Open IFrame,0
+Save Page Image,0
+Adobe Test,0
+Record State and Fill,0
+Listen,0
+Record State,0
